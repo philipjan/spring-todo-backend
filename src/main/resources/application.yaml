@@ -3,6 +3,7 @@ spring:
     url: r2dbc:postgresql://localhost:5432/tododb
     username: philipj
     password: philipjpostgres
+# Include your custom message on error responses
 server:
   error:
     include-message: always
