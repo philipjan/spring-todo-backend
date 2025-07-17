@@ -1,0 +1,18 @@
+meta {
+  name: Add Todo
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/todo
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "{{$randomWords}}",
+    "isFinished": "{{$randomBoolean}}"
+  }
+}

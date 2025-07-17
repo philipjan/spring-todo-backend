@@ -1,0 +1,18 @@
+meta {
+  name: Add Todo Empty Payload
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{BASE_URL}}/todo
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "",
+    "isFinished": {{$randomBoolean}}
+  }
+}

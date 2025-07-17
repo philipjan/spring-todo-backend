@@ -1,9 +1,9 @@
 package com.pjb.todo.todobackend.controller.todo
 
+import com.pjb.todo.todobackend.model.dto.TodoDTO
 import com.pjb.todo.todobackend.service.TodoService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api")
@@ -13,4 +13,19 @@ class TodoController(
 
     @GetMapping("/todo")
     fun getAll() = todoService.findAll()
+
+    @GetMapping("/todo/{id}")
+     fun getTodoById(@PathVariable id: Long) = todoService.getTodoById(id)
+
+    @PostMapping("/todo")
+    fun createTodo(@Valid @RequestBody todoDTO: TodoDTO) = todoService.createTodo(todoDTO)
+
+    @PutMapping("/todo/{id}")
+    fun updateTodo(@PathVariable id: Long, @Valid @RequestBody payload: TodoDTO) = todoService.updateTodo(
+        id = id,
+        payload = payload
+    )
+
+    @DeleteMapping("/todo/{id}")
+    fun deleteTodo(@PathVariable id: Long) = todoService.deleteTodo(id)
 }

@@ -1,0 +1,18 @@
+meta {
+  name: Update Todo
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{BASE_URL}}/todo/3
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "task": "Dance for dog food no more!",
+    "isFinished": {{$randomBoolean}}
+  }
+}

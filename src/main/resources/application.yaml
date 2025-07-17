@@ -3,3 +3,6 @@ spring:
     url: r2dbc:postgresql://localhost:5432/tododb
     username: philipj
     password: philipjpostgres
+server:
+  error:
+    include-message: always
