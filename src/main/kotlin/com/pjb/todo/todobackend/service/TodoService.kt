@@ -6,9 +6,9 @@ import com.pjb.todo.todobackend.exception.TodoErrorCodes
 import com.pjb.todo.todobackend.model.dto.TodoDTO
 import com.pjb.todo.todobackend.model.entity.todo.Todo
 import com.pjb.todo.todobackend.repository.todo.TodoRepository
+import com.pjb.todo.todobackend.util.asyncIO
+import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 class TodoService(
@@ -17,33 +17,35 @@ class TodoService(
 
     fun findAll() = todoRepository.findAll()
 
-    fun getTodoById(id: Long) = todoRepository.findById(id).switchIfEmpty {
-        Mono.error(NotFoundException(TodoErrorCodes.ERR_TODO_NOT_FOUND))
+
+    suspend fun getTodoById(id: Long) = coroutineScope {
+        val todo = asyncIO{ todoRepository.findById(id) }
+        todo.await() ?: run { throw NotFoundException(TodoErrorCodes.ERR_TODO_NOT_FOUND) }
     }
 
-    fun createTodo(todoDTO: TodoDTO) = todoRepository.save<Todo>(
-        Todo(
-            id = todoDTO.id,
-            task = todoDTO.task,
-            isFinished = todoDTO.isFinished
-        )
-    )
-
-    fun updateTodo(id: Long, payload: TodoDTO) = todoRepository.findById(id)
-        .switchIfEmpty {
-            Mono.error(BadRequestException(TodoErrorCodes.ERR_TODO_BAD_REQUEST))
-        }
-        .flatMap {
-            createTodo(
-                TodoDTO(id = id, task = payload.task, isFinished = payload.isFinished)
+    suspend fun createTodo(todoDTO: TodoDTO) = coroutineScope {
+        val result = asyncIO { todoRepository.save(
+            Todo(
+                id = todoDTO.id,
+                task = todoDTO.task,
+                isFinished = todoDTO.isFinished
             )
-        }
+        ) }
+        result.await()
+    }
 
-    fun deleteTodo(id: Long) = todoRepository.findById(id)
-        .switchIfEmpty {
-            Mono.error(BadRequestException(TodoErrorCodes.ERR_TODO_BAD_REQUEST))
-        }
-        .flatMap {
-            todoRepository.deleteById(id)
-        }
+    suspend fun updateTodo(id: Long, payload: TodoDTO) = coroutineScope {
+        val todoById = asyncIO { todoRepository.findById(id) }
+        if (todoById.await() == null) throw BadRequestException(TodoErrorCodes.ERR_TODO_BAD_REQUEST)
+        val updateTodo = asyncIO { createTodo(
+            TodoDTO(id = id, task = payload.task, isFinished = payload.isFinished)
+        ) }
+        updateTodo
+    }
+
+    suspend fun deleteTodo(id: Long) = coroutineScope {
+        val todoById = asyncIO { todoRepository.findById(id) }
+        if (todoById.await() == null) throw BadRequestException(TodoErrorCodes.ERR_TODO_BAD_REQUEST)
+        todoRepository.deleteById(id)
+    }
 }

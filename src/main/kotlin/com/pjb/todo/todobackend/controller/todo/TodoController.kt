@@ -15,17 +15,17 @@ class TodoController(
     fun getAll() = todoService.findAll()
 
     @GetMapping("/todo/{id}")
-     fun getTodoById(@PathVariable id: Long) = todoService.getTodoById(id)
+     suspend fun getTodoById(@PathVariable id: Long) = todoService.getTodoById(id)
 
     @PostMapping("/todo")
-    fun createTodo(@Valid @RequestBody todoDTO: TodoDTO) = todoService.createTodo(todoDTO)
+    suspend fun createTodo(@Valid @RequestBody todoDTO: TodoDTO) = todoService.createTodo(todoDTO)
 
     @PutMapping("/todo/{id}")
-    fun updateTodo(@PathVariable id: Long, @Valid @RequestBody payload: TodoDTO) = todoService.updateTodo(
+    suspend fun updateTodo(@PathVariable id: Long, @Valid @RequestBody payload: TodoDTO) = todoService.updateTodo(
         id = id,
         payload = payload
     )
 
     @DeleteMapping("/todo/{id}")
-    fun deleteTodo(@PathVariable id: Long) = todoService.deleteTodo(id)
+    suspend fun deleteTodo(@PathVariable id: Long) = todoService.deleteTodo(id)
 }
