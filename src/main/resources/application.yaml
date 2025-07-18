@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/tododb
+    url: r2dbc:postgresql://192.168.2.135:5432/tododb
     username: philipj
     password: philipjpostgres
 # Include your custom message on error responses
